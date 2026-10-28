@@ -198,7 +198,7 @@ body{padding-bottom:70px;}
       <button class="btn-all" onclick="checkUpdate()">🔄 检查更新</button>
       <span id="updResult" class="tip"></span>
     </div>
-    <div class="tip">将更新源地址填为线上 version.json（含 version / apkUrl / log 字段），点击检查即可获取新版本。APP 内加载的是 assets 里打包的页面，更新检测提示后需下载新 APK 安装。</div>
+    <div class="tip">默认自动检查 GitHub 仓库最新 Release（无需配置）；也可填写自定义 version.json 地址覆盖。检测到新版本后点击链接下载新 APK 安装即可。</div>
   </div>
   <div class="card">
     <h2>更新日志</h2>
@@ -397,8 +397,9 @@ function ttClick(d,slot){
 }
 
 /* ===== 设置页 ===== */
-const APP_VERSION="1.3.0";
+const APP_VERSION="1.3.1";
 const CHANGELOG=[
+ ["1.3.1","2026-10-28",["检查更新直连 GitHub 最新 Release：自动获取最新版本号/APK下载链接/更新说明，无需手动填更新源"]],
  ["1.3.0","2026-10-28",["新增「文件传输」面板：下载/导出带进度条，显示文件保存目录","APP内文件可直接保存到手机下载目录（不再依赖浏览器下载）","新增存储权限申请弹窗，拒绝后引导去系统设置授权"]],
  ["1.2.0","2026-10-28",["改为通用程序：内置名单移除，名单与课表均通过模板 CSV 导入导出","新增名单模板下载、名单导出、课表模板下载、课表导入导出","空名单时给出导入引导"]],
  ["1.1.1","2026-10-28",["修复：APP内点击「编辑课表」无反应（改用内置弹窗，替代WebView不支持的原生prompt/confirm）","APP性能优化：开启硬件加速、修复首次打开黑边"]],
@@ -425,16 +426,31 @@ function askConfirm(msg,cb){_ok=cb;_cancel=null;
 function alert2(msg){askConfirm(msg,null);document.getElementById("modalBtns").children[0].style.visibility="hidden";_ok=()=>{document.getElementById("modalBtns").children[0].style.visibility="visible";};}
 function modalOk(){document.getElementById("modalMask").classList.remove("show");const f=_ok;_ok=_cancel=null;if(f)f();}
 function modalCancel(){document.getElementById("modalMask").classList.remove("show");const f=_cancel;_ok=_cancel=null;if(f)f(null);}
+const GH_REPO="DrLychee/didactic-octo-telegram";
+function cmpVer(a,b){a=String(a).replace(/^v/,"");b=String(b).replace(/^v/,"");
+ const pa=a.split(".").map(Number),pb=b.split(".").map(Number);
+ for(let i=0;i<Math.max(pa.length,pb.length);i++){const x=pa[i]||0,y=pb[i]||0;if(x!==y)return x-y;}return 0;}
 function checkUpdate(){
   const res=document.getElementById("updResult");
-  const url=(opts.url||"").trim();
-  if(!url){res.textContent="请先在常用设置里填写更新源地址（version.json）";return;}
-  res.textContent="正在检查…";
-  fetch(url,{cache:"no-store"}).then(r=>r.json()).then(j=>{
-    if(j.version&&j.version!==APP_VERSION){
-      res.innerHTML=`发现新版本 <b>v${j.version}</b>${j.log?"：<br>"+(Array.isArray(j.log)?j.log.join("<br>"):j.log):""}${j.apkUrl?`<br><a href="${j.apkUrl}" target="_blank" style="color:#7c3aed">📥 点击下载新版本 APK</a>`:""}`;
+  const custom=(opts.url||"").trim();
+  const url=custom||("https://api.github.com/repos/"+GH_REPO+"/releases/latest");
+  res.textContent="正在检查更新…";
+  fetch(url,{cache:"no-store",headers:{"Accept":"application/vnd.github+json"}}).then(r=>r.json()).then(j=>{
+    let ver,apkUrl,log;
+    if(custom){
+      ver=j.version;apkUrl=j.apkUrl;
+      log=Array.isArray(j.log)?j.log.join("<br>"):(j.log||"");
+    }else{
+      if(j.message&&!j.tag_name){res.textContent="检查失败："+j.message+"（可稍后重试）";return;}
+      ver=(j.tag_name||"").replace(/^v/,"");
+      const apk=(j.assets||[]).find(a=>a.name.endsWith(".apk"));
+      apkUrl=apk?apk.browser_download_url:(j.html_url||"");
+      log=(j.body||"").replace(/\r/g,"").split("\n").filter(Boolean).map(l=>l.replace(/^[#\-\s>]+/,"")).slice(0,10).join("<br>");
+    }
+    if(ver&&cmpVer(ver,APP_VERSION)>0){
+      res.innerHTML=`发现新版本 <b>v${ver}</b>（当前 v${APP_VERSION}）${log?"<br>"+log:""}${apkUrl?`<br><a href="${apkUrl}" target="_blank" style="color:#7c3aed">📥 点击下载新版本 APK</a>`:""}`;
     }else{res.textContent="已是最新版本 v"+APP_VERSION;}
-  }).catch(()=>{res.textContent="检查失败：无法访问更新源，请检查网络或地址";});
+  }).catch(()=>{res.textContent="检查失败：无法访问更新源，请检查网络";});
 }
 function renderChangelog(){document.getElementById("changelog").innerHTML=CHANGELOG.map(([v,d,items])=>`<b>v${v}</b>（${d}）<br>${items.map(i=>"· "+i).join("<br>")}`).join("<br><br>");}
 applyOpts();renderChangelog();
