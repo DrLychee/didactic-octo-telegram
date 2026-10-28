@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>班级考勤管理系统</title>
+<style>
+:root{--ok:#16a34a;--absent:#dc2626;--leave:#d97706;--late:#2563eb;}
+*{box-sizing:border-box;margin:0;padding:0;font-family:"Microsoft YaHei",system-ui,sans-serif;}
+body{background:#f1f5f9;color:#0f172a;padding:16px;max-width:1100px;margin:0 auto;}
+h1{font-size:22px;text-align:center;margin-bottom:14px;}
+.card{background:#fff;border-radius:12px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.08);margin-bottom:14px;}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+.toolbar label{font-size:14px;}
+input[type=date],select{padding:6px 10px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;}
+button{border:none;border-radius:8px;padding:8px 14px;font-size:14px;cursor:pointer;transition:.15s;}
+button:hover{filter:brightness(1.1);}
+.btn-all{background:var(--ok);color:#fff;}
+.btn-clear{background:#94a3b8;color:#fff;}
+.btn-export{background:#7c3aed;color:#fff;}
+.btn-del{background:#e2e8f0;color:#b91c1c;}
+.slotbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.slotbtn{padding:8px 14px;border-radius:8px;background:#e2e8f0;color:#334155;font-size:14px;}
+.slotbtn.active{background:#0f172a;color:#fff;}
+.slotbtn .tm{display:block;font-size:11px;opacity:.7;}
+.slotbtn.now{outline:3px solid #f59e0b;}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}
+.stat{flex:1;min-width:100px;border-radius:10px;padding:10px;text-align:center;color:#fff;}
+.stat b{font-size:22px;display:block;}
+.s-ok{background:var(--ok);} .s-absent{background:var(--absent);} .s-leave{background:var(--leave);} .s-late{background:var(--late);} .s-none{background:#64748b;}
+table{width:100%;border-collapse:collapse;font-size:14px;}
+th,td{padding:8px 6px;border-bottom:1px solid #e2e8f0;text-align:center;}
+th{background:#f8fafc;position:sticky;top:0;}
+tr:hover{background:#f8fafc;}
+.stbtn{padding:5px 10px;font-size:13px;border-radius:6px;background:#e2e8f0;color:#475569;}
+.stbtn.active-出勤{background:var(--ok);color:#fff;}
+.stbtn.active-旷课{background:var(--absent);color:#fff;}
+.stbtn.active-请假{background:var(--leave);color:#fff;}
+.stbtn.active-迟到{background:var(--late);color:#fff;}
+.search{padding:6px 10px;border:1px solid #cbd5e1;border-radius:8px;width:160px;}
+.note{width:100%;max-width:180px;border:1px solid #e2e8f0;border-radius:6px;padding:4px;font-size:13px;}
+h2{font-size:16px;margin-bottom:10px;}
+.records button{margin-right:6px;margin-bottom:6px;}
+.tip{font-size:13px;color:#64748b;margin-top:8px;}
+@media(max-width:600px){table{font-size:12px;}.stbtn{padding:4px 6px;}}
+/* 底部导航 */
+.nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;display:flex;z-index:50;}
+.nav button{flex:1;border-radius:0;padding:12px 0;font-size:16px;background:#fff;color:#64748b;}
+.nav button.active{color:#0f172a;font-weight:bold;box-shadow:inset 0 3px 0 #0f172a;}
+body{padding-bottom:70px;}
+.page{display:none;}.page.active{display:block;}
+/* 周历课表 */
+.ttgrid{width:100%;border-collapse:collapse;table-layout:fixed;}
+.ttgrid th,.ttgrid td{border:1px solid #e2e8f0;padding:4px;height:64px;vertical-align:top;font-size:12px;cursor:pointer;}
+.ttgrid th{background:#f8fafc;height:auto;cursor:default;}
+.ttcourse{border-radius:8px;padding:5px 4px;color:#fff;font-size:12px;line-height:1.3;height:100%;}
+.ttcourse small{opacity:.85;display:block;}
+.ttcourse .att{display:block;font-size:11px;margin-top:2px;background:rgba(255,255,255,.25);border-radius:4px;padding:1px 3px;}
+.emptycell{color:#cbd5e1;text-align:center;display:block;margin-top:18px;}
+.ttcolors{color:#fff;}
+/* 内置弹窗（替代prompt/confirm，WebView可用） */
+#modalMask{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99;align-items:center;justify-content:center;}
+#modalMask.show{display:flex;}
+#modalBox{background:#fff;border-radius:14px;padding:20px;width:min(90vw,360px);box-shadow:0 8px 30px rgba(0,0,0,.25);}
+#modalMsg{font-size:15px;line-height:1.6;white-space:pre-line;margin-bottom:14px;}
+#modalInput{width:100%;padding:9px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;margin-bottom:14px;display:none;}
+#modalBtns{display:flex;gap:10px;justify-content:flex-end;}
+#modalBtns button{padding:8px 18px;}
+/* 文件传输面板 */
+#txFab{position:fixed;right:14px;bottom:84px;z-index:60;width:52px;height:52px;border-radius:50%;background:#0f172a;color:#fff;font-size:22px;box-shadow:0 4px 12px rgba(0,0,0,.3);}
+#txPanel{display:none;position:fixed;left:0;right:0;bottom:0;z-index:65;background:#fff;border-radius:16px 16px 0 0;box-shadow:0 -4px 24px rgba(0,0,0,.2);max-height:70vh;overflow:auto;padding:16px;}
+#txPanel.show{display:block;}
+.txrow{border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:13px;}
+.txrow .nm{font-weight:bold;margin-bottom:6px;}
+.txbar{height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden;margin:6px 0;}
+.txbar>div{height:100%;background:var(--ok);width:0;transition:width .2s;}
+.txpath{color:#64748b;font-size:12px;word-break:break-all;}
+.txdir{background:#f1f5f9;border-radius:8px;padding:8px 10px;font-size:12px;color:#475569;margin-bottom:10px;word-break:break-all;}
+</style>
+</head>
+<body>
+<!-- 第1页：考勤 -->
+<div id="page-att" class="page active">
+<h1>📋 班级考勤管理系统</h1>
+
+<div class="card">
+  <div class="toolbar">
+    <label>日期：<input type="date" id="date" onchange="render()"></label>
+    <button class="btn-all" onclick="markAll('出勤')">✅ 一键全员出勤（本节）</button>
+    <button class="btn-clear" onclick="clearDay()">清空本节课</button>
+    <button class="btn-export" onclick="exportCSV()">📥 导出本节 CSV</button>
+    <button class="btn-export" onclick="exportAll()">📥 导出全部统计</button>
+    <input class="search" id="search" placeholder="🔍 搜索姓名/学号" oninput="render()">
+  </div>
+  <div class="slotbar" id="slotbar"></div>
+  <div class="tip" id="tip"></div>
+  <div class="stats" id="stats"></div>
+</div>
+
+<div class="card">
+  <h2>学生名单（共 <span id="count"></span> 人）—— 点击按钮切换状态</h2>
+  <div style="overflow:auto;max-height:60vh;"><table id="tbl"></table></div>
+</div>
+
+<div class="card">
+  <h2>请假审批（全部记录）</h2>
+  <table id="leaveTbl"></table>
+</div>
+
+<div class="card">
+  <h2>历史记录（按节课归档）</h2>
+  <div class="records" id="records"></div>
+</div>
+</div><!-- end page-att -->
+
+<!-- 第2页：周历课表 -->
+<div id="page-tt" class="page">
+  <h1>🗓️ 周历课表</h1>
+  <div class="card">
+    <div class="toolbar">
+      <button class="btn-export" id="ttEditBtn" onclick="toggleTTEdit()">✏️ 编辑课表</button>
+      <button class="btn-export" onclick="dlTemplate('课表模板.csv','星期,节次,课程,教室\n周一,1-2,高等数学,教1-101\n周三,3-4,大学英语,教2-205')">📄 下载课表模板 CSV</button>
+      <button class="btn-export" onclick="ttImportUI()">📂 导入课表 CSV</button>
+      <input type="file" id="ttCsvFile" accept=".csv,.txt" style="display:none" onchange="ttImport(this)">
+      <button class="btn-export" onclick="ttExport()">📤 导出课表 CSV</button>
+      <span class="tip" id="ttTip">点击有课的格子可查看/同步该节课的考勤结果</span>
+    </div>
+    <div style="overflow:auto;"><table class="ttgrid" id="ttGrid"></table></div>
+    <div class="tip">编辑模式：点击空格子添加课程（可填"课程名@教室"），点击已有课程可修改，输入"删除"清除该格。课表自由流动，按周维护即可。</div>
+  </div>
+</div>
+
+<button id="txFab" onclick="toggleTx()">📂</button>
+<div id="txPanel">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+    <b>📂 文件传输</b>
+    <button class="btn-clear" onclick="toggleTx()">收起</button>
+  </div>
+  <div class="txdir">📁 保存目录：<span id="txDir">检测中…</span></div>
+  <div id="txList"><div class="tip">暂无传输任务。下载模板、导出名单/课表/考勤、导入文件都会显示在这里。</div></div>
+</div>
+
+<div id="modalMask"><div id="modalBox">  <div id="modalMsg"></div>
+  <input id="modalInput">
+  <div id="modalBtns">
+    <button class="btn-clear" onclick="modalCancel()">取消</button>
+    <button class="btn-all" onclick="modalOk()">确定</button>
+  </div>
+</div></div>
+
+<div class="nav">
+  <button id="nav-att" class="active" onclick="switchPage('att')">📝 考勤</button>
+  <button id="nav-tt" onclick="switchPage('tt')">📅 课表</button>
+  <button id="nav-set" onclick="switchPage('set')">⚙️ 设置</button>
+</div>
+
+<!-- 第3页：设置 -->
+<div id="page-set" class="page">
+  <h1>⚙️ 设置</h1>
+  <div class="card">
+    <h2>常用设置</h2>
+    <div class="toolbar" style="flex-direction:column;align-items:flex-start;gap:12px;">
+      <label style="display:flex;align-items:center;gap:8px;"><input type="checkbox" id="optAuto" onchange="saveOpts()"> 打开页面时自动定位到当前节次</label>
+      <label>班级名称：<input type="text" id="optClassName" class="search" style="width:220px" onchange="saveOpts()"></label>
+      <label>更新源地址（检查更新用）：<input type="text" id="optUrl" class="search" style="width:320px" placeholder="https://.../version.json" onchange="saveOpts()"></label>
+    </div>
+  </div>
+  <div class="card">
+    <h2>学生名单管理（当前 <span id="rosterCount"></span> 人）</h2>
+    <div class="toolbar" style="flex-direction:column;align-items:flex-start;gap:10px;">
+      <div class="tip">方式一：用 Excel/WPS 打开名单 xlsx → 全选复制（Ctrl+C）→ 粘贴到下面框 → 点导入。<br>方式二：点击按钮选择 CSV 文件。格式：学号、姓名、性别（列顺序不限，自动识别表头）。</div>
+      <input type="file" id="csvFile" accept=".csv,.txt,.tsv" style="display:none" onchange="importCSVFile(this)">
+      <textarea id="pasteBox" style="width:100%;max-width:560px;height:110px;border:1px solid #cbd5e1;border-radius:8px;padding:8px;font-size:13px;" placeholder="学号	姓名	性别
+2025010101	张三	男
+..."></textarea>
+      <div class="toolbar">
+        <button class="btn-export" onclick="dlTemplate('考勤名单模板.csv','学号,姓名,性别\n2025010101,张三,男\n2025010102,李四,女')">📄 下载名单模板 CSV</button>
+        <button class="btn-all" onclick="importRoster()">📥 导入名单（覆盖）</button>
+        <button class="btn-export" onclick="document.getElementById('csvFile').click()">📂 导入 CSV 文件</button>
+        <button class="btn-export" onclick="exportRoster()">📤 导出当前名单</button>
+        <button class="btn-del" onclick="askConfirm('确定清空当前名单？（考勤记录保留）',()=>{STUDENTS=[];saveStudents();render();renderSet();})">🗑️ 清空名单</button>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>数据管理</h2>
+    <div class="toolbar">
+      <button class="btn-export" onclick="backupData()">💾 导出备份(JSON)</button>
+      <button class="btn-export" onclick="document.getElementById('restoreFile').click()">♻️ 恢复备份</button>
+      <input type="file" id="restoreFile" accept=".json" style="display:none" onchange="restoreData(this)">
+      <button class="btn-del" onclick="wipeData()">🗑️ 清空全部考勤数据</button>
+    </div>
+    <div class="tip">数据存储在设备本地。换机/升级前请先导出备份。</div>
+  </div>
+  <div class="card">
+    <h2>检查更新</h2>
+    <div class="toolbar">
+      <button class="btn-all" onclick="checkUpdate()">🔄 检查更新</button>
+      <span id="updResult" class="tip"></span>
+    </div>
+    <div class="tip">将更新源地址填为线上 version.json（含 version / apkUrl / log 字段），点击检查即可获取新版本。APP 内加载的是 assets 里打包的页面，更新检测提示后需下载新 APK 安装。</div>
+  </div>
+  <div class="card">
+    <h2>更新日志</h2>
+    <div id="changelog" class="tip" style="line-height:1.9;"></div>
+  </div>
+  <div class="card">
+    <h2>关于</h2>
+    <div class="tip" id="aboutInfo"></div>
+  </div>
+</div>
+
+<script>
+let STUDENTS=(()=>{try{const s=JSON.parse(localStorage.getItem("students_roster"));return Array.isArray(s)&&s.length?s:[];}catch(e){return [];}})();
+function saveStudents(){localStorage.setItem("students_roster",JSON.stringify(STUDENTS));}
+const STATES=["出勤","旷课","请假","迟到"];
+// 节次定义：每节45分钟，1-2节早8点开始，3-4节10点，5-6节14点，7-8节16点
+const SLOTS=[
+ {key:"1-2",label:"第1-2节",start:"08:00",end:"09:40"},
+ {key:"3-4",label:"第3-4节",start:"10:00",end:"11:40"},
+ {key:"5-6",label:"第5-6节",start:"14:00",end:"15:40"},
+ {key:"7-8",label:"第7-8节",start:"16:00",end:"17:40"}
+];
+let curSlot=SLOTS[0].key;
+let db=JSON.parse(localStorage.getItem("attend_db_v2")||"{}");
+function save(){localStorage.setItem("attend_db_v2",JSON.stringify(db));}
+function today(){return document.getElementById("date").value;}
+function key(){return today()+"#"+curSlot;}  // 记录键：日期#节次
+function cls(){const k=key();if(!db[k])db[k]={};return db[k];}
+function setStatus(id,s){const d=cls();if(d[id]&&d[id].s===s)delete d[id];else d[id]={s:s,t:Date.now()};save();render();}
+function currentSlotKey(){const n=new Date(),mins=n.getHours()*60+n.getMinutes();
+ for(const s of SLOTS){const[h1,m1]=s.start.split(":").map(Number),[h2,m2]=s.end.split(":").map(Number);
+  if(mins>=h1*60+m1&&mins<=h2*60+m2)return s.key;}
+ return null;}
+
+document.getElementById("date").value=new Date().toISOString().slice(0,10);
+(function(){let o={};try{o=JSON.parse(localStorage.getItem("app_opts")||"{}");}catch(e){}
+ curSlot=(o.auto===false)?SLOTS[0].key:(currentSlotKey()||SLOTS[0].key);})();
+
+function markAll(s){const d=cls();STUDENTS.forEach(([id])=>d[id]={s:s,t:Date.now()});save();render();}
+function clearDay(){askConfirm("确定清空 "+today()+" "+curSlot+"节 的考勤？",()=>{delete db[key()];save();render();});}
+
+function render(){
+  // slot buttons
+  const now=currentSlotKey();
+  document.getElementById("slotbar").innerHTML=SLOTS.map(s=>
+    `<button class="slotbtn ${curSlot===s.key?"active":""} ${now===s.key?"now":""}" onclick="curSlot='${s.key}';render()">${s.label}<span class="tm">${s.start}–${s.end}</span></button>`).join("");
+  document.getElementById("tip").textContent=now?"🟠 当前时间处于第"+now+"节（黄框标出），正在记录该节考勤":"当前不在上课时段，请手动选择节次";
+  const d=cls();
+  const cnt={"出勤":0,"旷课":0,"请假":0,"迟到":0,"未记录":0};
+  STUDENTS.forEach(([id])=>{const r=d[id];if(r)cnt[r.s]++;else cnt["未记录"]++;});
+  document.getElementById("stats").innerHTML=
+    stat("出勤",cnt["出勤"],"s-ok")+stat("迟到",cnt["迟到"],"s-late")+stat("请假",cnt["请假"],"s-leave")+
+    stat("旷课",cnt["旷课"],"s-absent")+stat("未记录",cnt["未记录"],"s-none");
+  const kw=document.getElementById("search").value.trim();
+  document.getElementById("count").textContent=STUDENTS.length;
+  if(document.getElementById("rosterCount"))document.getElementById("rosterCount").textContent=STUDENTS.length;
+  if(!STUDENTS.length){
+    document.getElementById("tbl").innerHTML="<tr><td style='padding:30px;color:#64748b;line-height:2'>📋 还没有学生名单<br>请到 <b>⚙️ 设置 → 学生名单管理</b>：<br>① 点「下载名单模板 CSV」或用 Excel 复制名单<br>② 粘贴到输入框点「导入名单」，或选 CSV 文件导入</td></tr>";
+    return;
+  }
+  let html="<tr><th>学号</th><th>姓名</th><th>性别</th><th>状态</th><th>操作</th><th>备注</th></tr>";
+  STUDENTS.filter(s=>!kw||s[0].includes(kw)||s[1].includes(kw)).forEach(([id,name,g])=>{
+    const r=d[id],cur=r?r.s:"";
+    html+=`<tr><td>${id}</td><td><b>${name}</b></td><td>${g}</td><td>${cur?`<span style="color:${{'出勤':'var(--ok)','旷课':'var(--absent)','请假':'var(--leave)','迟到':'var(--late)'}[cur]}">${cur}</span>`:"—"}</td><td>${STATES.map(s=>`<button class="stbtn ${cur===s?"active-"+s:""}" onclick="setStatus('${id}','${s}')">${s}</button>`).join(" ")}</td><td><input class="note" value="${r&&r.note?r.note.replace(/"/g,"&quot;"):""}" onchange="setNote('${id}',this.value)" placeholder="请假原因等"></td></tr>`;
+  });
+  document.getElementById("tbl").innerHTML=html;
+  // leave table
+  let lh="<tr><th>日期</th><th>节次</th><th>学号</th><th>姓名</th><th>原因</th></tr>";let any=false;
+  Object.keys(db).sort().reverse().forEach(k=>{const[dt,sl]=k.split("#");STUDENTS.forEach(([id,name])=>{const r=db[k][id];if(r&&r.s==="请假"){any=true;lh+=`<tr><td>${dt}</td><td>第${sl}节</td><td>${id}</td><td>${name}</td><td>${r.note||"(未填写)"}</td></tr>`;}});});
+  document.getElementById("leaveTbl").innerHTML=any?lh:"<tr><td style='color:#94a3b8'>暂无请假记录</td></tr>";
+  // history
+  const keys=Object.keys(db).filter(k=>Object.keys(db[k]).length).sort().reverse();
+  document.getElementById("records").innerHTML=keys.length?keys.map(k=>{
+    const[dt,sl]=k.split("#"),dk=db[k];let a=0,mi=0,l=0,x=0;
+    STUDENTS.forEach(([id])=>{const r=dk[id];if(r){if(r.s==="出勤")a++;else if(r.s==="迟到")mi++;else if(r.s==="请假")l++;else x++;}});
+    return `<button onclick="document.getElementById('date').value='${dt}';curSlot='${sl}';render()">${dt} 第${sl}节：出勤${a} 迟到${mi} 请假${l} 旷课${x}</button>`;
+  }).join(""):"<span style='color:#94a3b8'>暂无历史记录</span>";
+}
+function setNote(id,v){const d=cls();if(d[id]){d[id].note=v;save();}else{d[id]={s:"请假",t:Date.now(),note:v};save();}render();}
+function stat(t,n,c){return `<div class="stat ${c}">${t}<b>${n}</b></div>`;}
+
+function dl(name,text){txDownload(name,text);}
+/* ===== 文件传输面板 ===== */
+function txDirLabel(){
+  if(window.AndroidBridge&&AndroidBridge.getDir){try{return AndroidBridge.getDir();}catch(e){}}
+  return "浏览器默认下载目录（浏览器下载设置里可见）";
+}
+function toggleTx(){
+  const p=document.getElementById("txPanel");
+  p.classList.toggle("show");
+  if(p.classList.contains("show"))document.getElementById("txDir").textContent=txDirLabel();
+}
+function txRow(id,name){
+  const list=document.getElementById("txList");
+  const empty=list.querySelector(".tip");if(empty)empty.remove();
+  const div=document.createElement("div");div.className="txrow";div.id=id;
+  div.innerHTML=`<div class="nm">${name}</div><div class="txbar"><div></div></div><div class="txstatus">准备中…</div>`;
+  list.prepend(div);
+  document.getElementById("txPanel").classList.add("show");
+  document.getElementById("txDir").textContent=txDirLabel();
+  return div;
+}
+function txStep(row,pct,txt){row.querySelector(".txbar>div").style.width=pct+"%";row.querySelector(".txstatus").textContent=txt;}
+function txDownload(name,text){
+  const id="tx"+Date.now();
+  const row=txRow(id,name);
+  txStep(row,20,"正在生成文件…");
+  setTimeout(()=>txStep(row,55,"正在写入…"),250);
+  setTimeout(()=>{
+    try{
+      let path="";
+      if(window.AndroidBridge&&AndroidBridge.saveFile){path=AndroidBridge.saveFile(name,text);}
+      else{
+        const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+text],{type:"text/csv"}));a.download=name;document.body.appendChild(a);a.click();a.remove();
+        path="已交给浏览器下载（查看浏览器下载记录）";
+      }
+      txStep(row,100,"✅ 完成："+path);row.querySelector(".txpath")||row.insertAdjacentHTML("beforeend",`<div class="txpath">存放位置：${path}</div>`);
+    }catch(e){txStep(row,100,"❌ 失败："+e.message);}
+  },600);
+}
+function txUploadDone(name,n){
+  const id="txu"+Date.now();
+  const row=txRow(id,name);
+  txStep(row,40,"正在读取文件…");
+  setTimeout(()=>txStep(row,100,"✅ 导入成功，共 "+n+" 条"),300);
+}
+function exportCSV(){const d=cls();let csv=`日期,节次,时间,学号,姓名,性别,状态,备注\n`;STUDENTS.forEach(([id,name,g])=>{const r=d[id];const sl=SLOTS.find(s=>s.key===curSlot);csv+=`${today()},第${curSlot}节,${sl.start}-${sl.end},${id},${name},${g},${r?r.s:"未记录"},${r&&r.note?r.note:""}\n`;});dl(`考勤_${today()}_第${curSlot}节.csv`,csv);}
+function exportAll(){let csv="学号,姓名,性别,出勤,迟到,请假,旷课,点名节数\n";const keys=Object.keys(db);
+ STUDENTS.forEach(([id,name,g])=>{const c={"出勤":0,"迟到":0,"请假":0,"旷课":0};let total=0;
+  keys.forEach(k=>{const r=db[k][id];if(r){c[r.s]++;total++;}});
+  csv+=`${id},${name},${g},${c["出勤"]},${c["迟到"]},${c["请假"]},${c["旷课"]},${total}\n`;});
+ dl("考勤统计_按节次.csv",csv);}
+
+render();
+
+/* ===== 页面切换 ===== */
+function switchPage(p){
+  document.querySelectorAll(".page").forEach(e=>e.classList.remove("active"));
+  document.getElementById("page-"+p).classList.add("active");
+  document.getElementById("nav-att").classList.toggle("active",p==="att");
+  document.getElementById("nav-tt").classList.toggle("active",p==="tt");
+  if(p==="tt")renderTT();
+}
+
+/* ===== 周历课表 ===== */
+let ttEdit=false;
+let timetable=JSON.parse(localStorage.getItem("class_timetable")||"{}"); // {"1"~"7" + "#" + slotKey: "课程名@教室"}
+const TTCOLORS=["#6366f1","#ec4899","#f59e0b","#10b981","#8b5cf6","#ef4444","#0ea5e9","#84cc16"];
+function saveTT(){localStorage.setItem("class_timetable",JSON.stringify(timetable));}
+function toggleTTEdit(){ttEdit=!ttEdit;document.getElementById("ttEditBtn").textContent=ttEdit?"✅ 完成编辑":"✏️ 编辑课表";document.getElementById("ttTip").textContent=ttEdit?"编辑模式：点击格子添加/修改课程，输入「删除」清除":"点击有课的格子可查看/同步该节课的考勤结果";renderTT();}
+function ttKey(day,slot){return day+"#"+slot;}
+// 找某星期最近的一个日期（含今天，往前找7天）
+function latestDateOfWeek(day){const n=new Date();for(let i=0;i<7;i++){const d=new Date(n);d.setDate(n.getDate()-i);if(d.getDay()===day)return d.toISOString().slice(0,10);}return today();}
+function renderTT(){
+  const todayDow=new Date().getDay()===0?7:new Date().getDay();
+  let html="<tr><th>节次/时间</th><th>周一</th><th>周二</th><th>周三</th><th>周四</th><th>周五</th><th>周六</th><th>周日</th></tr>";
+  SLOTS.forEach((sl,si)=>{
+    html+=`<tr><th>${sl.label}<br><small>${sl.start}–${sl.end}</small></th>`;
+    for(let d=1;d<=7;d++){
+      const c=timetable[ttKey(d,sl.key)];
+      const hl=d===todayDow?'style="background:#fef9c3;"':"";
+      if(c){
+        const[cname,room]=c.split("@");
+        // 同步考勤结果：该星期最近日期 + 该节次 的统计
+        const dt=latestDateOfWeek(d),att=db[dt+"#"+sl.key]||{};
+        let a=0,x=0,l=0,mi=0;STUDENTS.forEach(([id])=>{const r=att[id];if(r){if(r.s==="出勤")a++;else if(r.s==="旷课")x++;else if(r.s==="请假")l++;else if(r.s==="迟到")mi++;}});
+        const hasAtt=Object.keys(att).length>0;
+        const attTxt=ttEdit?"":`<span class="att">${hasAtt?`出勤${a} 缺${x} 假${l} 迟${mi}`:"未点名"}</span>`;
+        const bg=TTCOLORS[si%TTCOLORS.length];
+        html+=`<td ${hl} onclick="ttClick(${d},'${sl.key}')"><div class="ttcourse" style="background:${bg}">${cname}${room?"<small>@"+room+"</small>":""}${attTxt}</div></td>`;
+      }else{
+        html+=`<td ${hl} onclick="ttClick(${d},'${sl.key}')"><span class="emptycell">${ttEdit?"+":"—"}</span></td>`;
+      }
+    }
+    html+="</tr>";
+  });
+  document.getElementById("ttGrid").innerHTML=html;
+}
+function ttClick(d,slot){
+  if(ttEdit){
+    const old=timetable[ttKey(d,slot)]||"";
+    askText(`周${"一二三四五六日"[d-1]} 第${slot}节课程\n格式：课程名@教室（留空或输入"删除"清除该格）`,old,v=>{
+      if(v===null)return;
+      if(v.trim()===""||v.trim()==="删除")delete timetable[ttKey(d,slot)];
+      else timetable[ttKey(d,slot)]=v.trim();
+      saveTT();renderTT();
+    });
+  }else{
+    if(!timetable[ttKey(d,slot)])return;
+    const dt=latestDateOfWeek(d);
+    document.getElementById("date").value=dt;
+    curSlot=slot;
+    switchPage("att");
+    render();
+  }
+}
+
+/* ===== 设置页 ===== */
+const APP_VERSION="1.3.0";
+const CHANGELOG=[
+ ["1.3.0","2026-10-28",["新增「文件传输」面板：下载/导出带进度条，显示文件保存目录","APP内文件可直接保存到手机下载目录（不再依赖浏览器下载）","新增存储权限申请弹窗，拒绝后引导去系统设置授权"]],
+ ["1.2.0","2026-10-28",["改为通用程序：内置名单移除，名单与课表均通过模板 CSV 导入导出","新增名单模板下载、名单导出、课表模板下载、课表导入导出","空名单时给出导入引导"]],
+ ["1.1.1","2026-10-28",["修复：APP内点击「编辑课表」无反应（改用内置弹窗，替代WebView不支持的原生prompt/confirm）","APP性能优化：开启硬件加速、修复首次打开黑边"]],
+ ["1.1.0","2026-10-28",["新增「设置」页：常用设置、数据备份恢复、检查更新、更新日志","底部导航新增设置入口"]],
+ ["1.0.2","2026-10-28",["新增底部导航与周历课表页","点击课表课程可同步查看该节考勤结果"]],
+ ["1.0.1","2026-10-28",["节次时间修正：1-2节08:00-09:40，3-4节10:00-11:40，5-6节14:00-15:40，7-8节16:00-17:40"]],
+ ["1.0.0","2026-10-28",["首个版本：一键考勤、旷课/请假/迟到记录、请假备注、CSV导出、历史归档"]]
+];
+let opts=JSON.parse(localStorage.getItem("app_opts")||"{}");
+function saveOpts(){opts={auto:document.getElementById("optAuto").checked,clsName:document.getElementById("optClassName").value,url:document.getElementById("optUrl").value};localStorage.setItem("app_opts",JSON.stringify(opts));applyOpts();}
+function applyOpts(){document.getElementById("optAuto").checked=opts.auto!==false;document.getElementById("optClassName").value=opts.clsName||"";document.getElementById("optUrl").value=opts.url||"";document.querySelector("h1").textContent="📋 "+(opts.clsName||"班级")+" 考勤管理系统";document.getElementById("aboutInfo").textContent="班级考勤管理系统（通用版） v"+APP_VERSION;}
+function backupData(){dl("考勤备份_"+new Date().toISOString().slice(0,10)+".json",JSON.stringify({students:STUDENTS,db:db,timetable:timetable,opts:opts},null,1));}
+function restoreData(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);if(o.db)db=o.db;if(o.timetable)timetable=o.timetable;if(o.opts)opts=o.opts;if(Array.isArray(o.students)&&o.students.length){STUDENTS=o.students;saveStudents();}save();saveTT();localStorage.setItem("app_opts",JSON.stringify(opts));applyOpts();render();txUploadDone("备份恢复.json",1);}catch(e){alert2("备份文件无效");}};r.readAsText(f);}
+function wipeData(){askConfirm("确定清空全部考勤数据和课表？此操作不可恢复，建议先导出备份！",()=>{db={};timetable={};save();saveTT();render();alert2("已清空");});}
+
+/* ===== 内置弹窗（替代prompt/confirm/alert，兼容WebView） ===== */
+let _ok=null,_cancel=null;
+function askText(msg,def,cb){_ok=()=>cb(document.getElementById("modalInput").value);_cancel=()=>cb(null);
+ document.getElementById("modalMsg").textContent=msg;const i=document.getElementById("modalInput");i.style.display="block";i.value=def||"";setTimeout(()=>i.focus(),50);
+ document.getElementById("modalMask").classList.add("show");}
+function askConfirm(msg,cb){_ok=cb;_cancel=null;
+ document.getElementById("modalMsg").textContent=msg;document.getElementById("modalInput").style.display="none";
+ document.getElementById("modalMask").classList.add("show");}
+function alert2(msg){askConfirm(msg,null);document.getElementById("modalBtns").children[0].style.visibility="hidden";_ok=()=>{document.getElementById("modalBtns").children[0].style.visibility="visible";};}
+function modalOk(){document.getElementById("modalMask").classList.remove("show");const f=_ok;_ok=_cancel=null;if(f)f();}
+function modalCancel(){document.getElementById("modalMask").classList.remove("show");const f=_cancel;_ok=_cancel=null;if(f)f(null);}
+function checkUpdate(){
+  const res=document.getElementById("updResult");
+  const url=(opts.url||"").trim();
+  if(!url){res.textContent="请先在常用设置里填写更新源地址（version.json）";return;}
+  res.textContent="正在检查…";
+  fetch(url,{cache:"no-store"}).then(r=>r.json()).then(j=>{
+    if(j.version&&j.version!==APP_VERSION){
+      res.innerHTML=`发现新版本 <b>v${j.version}</b>${j.log?"：<br>"+(Array.isArray(j.log)?j.log.join("<br>"):j.log):""}${j.apkUrl?`<br><a href="${j.apkUrl}" target="_blank" style="color:#7c3aed">📥 点击下载新版本 APK</a>`:""}`;
+    }else{res.textContent="已是最新版本 v"+APP_VERSION;}
+  }).catch(()=>{res.textContent="检查失败：无法访问更新源，请检查网络或地址";});
+}
+function renderChangelog(){document.getElementById("changelog").innerHTML=CHANGELOG.map(([v,d,items])=>`<b>v${v}</b>（${d}）<br>${items.map(i=>"· "+i).join("<br>")}`).join("<br><br>");}
+applyOpts();renderChangelog();
+
+/* ===== 名单与课表模板导入导出 ===== */
+function dlTemplate(name,text){dl(name,text);}
+function parseRosterText(text){
+  const out=[];const seen=new Set();
+  for(let line of text.split(/\r?\n/)){
+    if(!line.trim())continue;
+    let cells=line.split(/\t|,/).map(c=>c.trim()).filter(c=>c);
+    if(cells.some(c=>c.includes("学号")||c.includes("姓名")||c.includes("性别")))continue; // 表头
+    // 空格分隔的行（如手工输入）再拆
+    if(cells.length===1)cells=cells[0].split(/\s+/);
+    const id=(cells.find(c=>/\d{6,}/.test(c))||"").replace(/\D/g,"");
+    const gender=cells.find(c=>/^(男|女)$/.test(c))||"";
+    let name=cells.filter(c=>/[\u4e00-\u9fa5]{2,4}/.test(c)&&!/^\d/.test(c)&&!["男","女"].includes(c))
+                  .sort((a,b)=>b.length-a.length)[0]||"";
+    name=(name.match(/[\u4e00-\u9fa5]{2,4}/)||[""])[0];
+    if(id&&name&&!seen.has(id)){seen.add(id);out.push([id,name,gender]);}
+  }
+  return out;
+}
+function importRoster(){
+  const t=document.getElementById("pasteBox").value;
+  const list=parseRosterText(t);
+  if(!list.length){alert2("未识别到有效数据。请检查格式：每行「学号 姓名 性别」，Tab或逗号分隔");return;}
+  askConfirm("识别到 "+list.length+" 名学生，将覆盖当前名单（"+STUDENTS.length+"人），确定导入？",()=>{
+    STUDENTS=list;saveStudents();render();txUploadDone("名单导入.csv",list.length);
+  });
+}
+function importCSVFile(inp){
+  const f=inp.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{document.getElementById("pasteBox").value=r.result;importRoster();inp.value="";};
+  r.readAsText(f,"utf-8");
+}
+function exportRoster(){
+  if(!STUDENTS.length){alert2("当前名单为空");return;}
+  dl("名单导出.csv","学号,姓名,性别\n"+STUDENTS.map(s=>s.join(",")).join("\n"));
+}
+// 课表模板导入导出
+function ttExport(){
+  const rows=Object.entries(timetable).map(([k,v])=>{const[d,sl]=k.split("#");const[cn,rm]=v.split("@");return ["一二三四五六日"[d-1],sl,cn||"",rm||""];});
+  if(!rows.length){alert2("课表为空，请先在课表页编辑");return;}
+  dl("课表导出.csv","星期,节次,课程,教室\n"+rows.map(r=>r.join(",")).join("\n"));
+}
+function ttImportUI(){document.getElementById("ttCsvFile").click();}
+function ttImport(inp){
+  const f=inp.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    const lines=r.result.split(/\r?\n/).filter(l=>l.trim()&&!l.includes("星期"));
+    let n=0;
+    for(const line of lines){
+      const c=line.split(",").map(x=>x.trim());
+      if(c.length<3)continue;
+      const d="一二三四五六日".indexOf(c[0].replace("周",""))+1;
+      const sl=c[1].replace(/第|节/g,"");
+      if(d<1||!SLOTS.some(s=>s.key===sl))continue;
+      timetable[ttKey(d,sl)]=c[2]+(c[3]?"@"+c[3]:"");n++;
+    }
+    saveTT();renderTT();txUploadDone("课表导入.csv",n);
+    inp.value="";
+  };
+  r.readAsText(f,"utf-8");
+}
+</script>
+</body>
+</html>
