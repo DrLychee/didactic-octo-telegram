@@ -1,1 +1,1 @@
-{"version":"1.4.1","apkUrl":"https://github.com/DrLychee/didactic-octo-telegram/releases/download/v1.4.1/class-attend-v1.4.1.apk","log":["修复页面黑边/视口问题"]}
+{"version":"1.4.2","apkUrl":"https://github.com/DrLychee/didactic-octo-telegram/releases/download/v1.4.2/class-attend-v1.4.2.apk","log":["修复检查更新版本号错误（改用CDN多源回退）"]}
