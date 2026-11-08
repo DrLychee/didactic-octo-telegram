@@ -1,10 +1,8 @@
 {
-  "version": "1.5.0",
-  "apkUrl": "https://github.com/DrLychee/didactic-octo-telegram/releases/download/v1.5.0/class-attend-v1.5.0.apk",
+  "version": "1.5.1",
+  "apkUrl": "https://github.com/DrLychee/didactic-octo-telegram/releases/download/v1.5.1/class-attend-v1.5.1.apk",
   "log": [
-    "新增「插件管理器」：可按需下载/启用/停用/卸载插件，启用的插件出现在底部导航",
-    "新增内置插件「班级台账」：班费收支（自动统计余额、按月筛选、导出）+ 会议记录（应到实到、决议待办）",
-    "新增在线插件「通知公告」「班干部通讯录」，可在插件管理器一键安装",
-    "备份文件已包含台账与插件数据"
+    "修复：打开出现大黑边、界面被缩小（补上 targetSdkVersion，系统不再启用屏幕兼容模式）",
+    "修复：导入 CSV 提示「没有应用可执行此操作」（改用系统文件管理器，统一不限类型，失败自动回退）"
   ]
 }
