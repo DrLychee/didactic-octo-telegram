@@ -1,0 +1,25 @@
+{
+  "updated": "2026-11-08",
+  "plugins": [
+    {
+      "id": "notice",
+      "name": "通知公告",
+      "icon": "📢",
+      "navLabel": "公告",
+      "version": "1.0.0",
+      "author": "官方",
+      "desc": "发布班级通知，支持置顶、编辑、删除，按发布时间倒序展示，可导出 CSV。",
+      "file": "https://cdn.jsdelivr.net/gh/DrLychee/didactic-octo-telegram@main/plugins/notice.js"
+    },
+    {
+      "id": "contacts",
+      "name": "班干部通讯录",
+      "icon": "📇",
+      "navLabel": "通讯录",
+      "version": "1.0.0",
+      "author": "官方",
+      "desc": "基于班级名单维护每位同学的手机号、QQ、宿舍与备注，支持搜索与导出 CSV。",
+      "file": "https://cdn.jsdelivr.net/gh/DrLychee/didactic-octo-telegram@main/plugins/contacts.js"
+    }
+  ]
+}
