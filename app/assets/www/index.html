@@ -45,7 +45,7 @@ h2{font-size:16px;margin-bottom:10px;}
 @media(max-width:600px){table{font-size:12px;}.stbtn{padding:4px 6px;}}
 /* 底部导航 */
 .nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;display:flex;z-index:50;}
-.nav button{flex:1;border-radius:0;padding:12px 0;font-size:16px;background:#fff;color:#64748b;}
+.nav button{flex:1;border-radius:0;padding:12px 0;font-size:13px;background:#fff;color:#64748b;}
 .nav button.active{color:#0f172a;font-weight:bold;box-shadow:inset 0 3px 0 #0f172a;}
 body{padding-bottom:70px;}
 .page{display:none;}.page.active{display:block;}
@@ -76,6 +76,57 @@ body{padding-bottom:70px;}
 .txbar>div{height:100%;background:var(--ok);width:0;transition:width .2s;}
 .txpath{color:#64748b;font-size:12px;word-break:break-all;}
 .txdir{background:#f1f5f9;border-radius:8px;padding:8px 10px;font-size:12px;color:#475569;margin-bottom:10px;word-break:break-all;}
+/* ===== 台账 ===== */
+.lgtabs{display:flex;gap:8px;margin-bottom:14px;}
+.lgtab{flex:1;padding:10px;border-radius:10px;background:#e2e8f0;color:#475569;font-size:15px;}
+.lgtab.active{background:#0f172a;color:#fff;font-weight:bold;}
+.fundsum{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:4px;}
+.fs{flex:1;min-width:92px;border-radius:10px;padding:12px 8px;text-align:center;color:#fff;}
+.fs small{display:block;font-size:12px;opacity:.85;margin-bottom:2px;}
+.fs b{font-size:19px;letter-spacing:-.3px;}
+.fs-in{background:#dc2626;}.fs-out{background:#16a34a;}.fs-bal{background:#0f172a;}
+.lgitem{border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;margin-bottom:8px;background:#fff;}
+.lgitem .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
+.lgitem .meta{font-size:12px;color:#64748b;margin-top:3px;line-height:1.6;}
+.lgitem .amt{font-weight:bold;font-size:16px;white-space:nowrap;}
+.amt-in{color:#dc2626;}.amt-out{color:#16a34a;}
+.amt-in::before{content:"+";}.amt-out::before{content:"-";}
+.lgacts{display:flex;gap:8px;justify-content:flex-end;margin-top:8px;}
+.lgacts button{font-size:12px;padding:5px 12px;}
+.mtag{display:inline-block;background:#eef2ff;color:#4338ca;border-radius:6px;padding:2px 8px;font-size:12px;}
+.mbody{display:none;border-top:1px dashed #e2e8f0;margin-top:9px;padding-top:9px;font-size:13px;line-height:1.75;color:#334155;}
+.lgitem.open .mbody{display:block;}
+.mbody h4{font-size:12px;color:#94a3b8;font-weight:normal;margin:6px 0 2px;}
+.mbody .txt{white-space:pre-wrap;word-break:break-word;}
+.del .lgitem .amt{text-decoration:line-through;}
+.lgempty{text-align:center;color:#94a3b8;padding:26px 0;font-size:13px;line-height:2;}
+/* 台账表单 */
+#lgMask{display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:120;align-items:flex-end;justify-content:center;}
+#lgMask.show{display:flex;}
+#lgForm{background:#fff;width:100%;max-width:560px;border-radius:16px 16px 0 0;padding:16px;max-height:90vh;overflow:auto;box-shadow:0 -6px 30px rgba(0,0,0,.25);}
+#lgForm label{display:block;font-size:13px;color:#475569;margin:11px 0 4px;}
+#lgForm input,#lgForm select,#lgForm textarea{width:100%;padding:9px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;font-family:inherit;background:#fff;}
+#lgForm textarea{height:76px;resize:vertical;line-height:1.6;}
+.lgrow{display:flex;gap:10px;}.lgrow>div{flex:1;}
+.lgfbtns{display:flex;gap:10px;margin-top:18px;}
+.lgfbtns button{flex:1;padding:12px;font-size:15px;}
+/* ===== 插件管理器 ===== */
+.pmcard{border:1px solid #e2e8f0;border-radius:12px;padding:12px;margin-bottom:10px;background:#fff;}
+.pmhd{display:flex;gap:10px;align-items:flex-start;}
+.pmicon{width:42px;height:42px;flex:0 0 42px;border-radius:11px;background:#eef2ff;display:flex;align-items:center;justify-content:center;font-size:21px;}
+.pmmain{flex:1;min-width:0;}
+.pmname{font-size:15px;font-weight:bold;}
+.pmver{font-size:11px;color:#94a3b8;font-weight:normal;margin-left:4px;}
+.pmdesc{font-size:12px;color:#475569;margin-top:3px;line-height:1.6;}
+.pmtags{margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;}
+.pmtag{font-size:11px;border-radius:5px;padding:1px 7px;background:#f1f5f9;color:#64748b;}
+.pmtag.on{background:#dcfce7;color:#15803d;}
+.pmtag.off{background:#f1f5f9;color:#64748b;}
+.pmtag.new{background:#fef3c7;color:#b45309;}
+.pmtag.bi{background:#e0e7ff;color:#3730a3;}
+.pmbtns{display:flex;gap:8px;margin-top:10px;justify-content:flex-end;flex-wrap:wrap;}
+.pmbtns button{font-size:13px;padding:7px 14px;}
+.btn-toggle{background:#0f172a;color:#fff;}
 </style>
 </head>
 <body>
@@ -130,6 +181,92 @@ body{padding-bottom:70px;}
   </div>
 </div>
 
+<!-- 插件模板：班级台账（启用后由插件框架注入为 page-ledger） -->
+<template id="tpl-ledger">
+  <h1>💰 班级台账</h1>
+  <div class="lgtabs">
+    <button class="lgtab active" id="lgtab-fund" onclick="switchLgTab('fund')">💰 班费收支</button>
+    <button class="lgtab" id="lgtab-meet" onclick="switchLgTab('meet')">📝 会议记录</button>
+  </div>
+
+  <!-- 班费 -->
+  <div id="lgFundView">
+    <div class="card">
+      <div class="fundsum" id="fundSum"></div>
+      <div class="tip" id="fundTip"></div>
+      <div class="toolbar" style="margin-top:12px;">
+        <button class="btn-all" onclick="openFundForm()">➕ 记一笔</button>
+        <select id="fMonth" onchange="renderFund()" style="padding:8px 10px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;"></select>
+        <button class="btn-export" onclick="exportFund()">📤 导出班费 CSV</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>收支明细 <span class="tip" id="fundCount"></span></h2>
+      <div id="fundList"></div>
+    </div>
+  </div>
+
+  <!-- 会议 -->
+  <div id="lgMeetView" style="display:none">
+    <div class="card">
+      <div class="toolbar">
+        <button class="btn-all" onclick="openMeetForm()">➕ 新建会议记录</button>
+        <button class="btn-export" onclick="exportMeet()">📤 导出会议 CSV</button>
+        <span class="tip" id="meetCount"></span>
+      </div>
+      <div class="tip">点击记录可展开会议内容与决议。</div>
+    </div>
+    <div class="card">
+      <h2>会议列表</h2>
+      <div id="meetList"></div>
+    </div>
+  </div>
+
+<!-- 台账表单 -->
+<div id="lgMask">
+  <div id="lgForm">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <b id="lgTitle" style="font-size:17px;">新增记录</b>
+      <button class="btn-clear" onclick="closeLgForm()" style="padding:5px 12px;">✕</button>
+    </div>
+
+    <div id="lgFundForm">
+      <label>日期</label><input type="date" id="fDate">
+      <label>类型</label>
+      <select id="fType" onchange="fillFundCats()"><option value="out">支出</option><option value="in">收入</option></select>
+      <label>金额（元）</label><input type="number" id="fAmt" step="0.01" inputmode="decimal" placeholder="0.00">
+      <label>分类</label><select id="fCat"></select>
+      <label>说明</label><input type="text" id="fNote" placeholder="如：10月班费收取（40人 × 50元）">
+      <label>经办人</label><input type="text" id="fWho" placeholder="可选">
+    </div>
+
+    <div id="lgMeetForm" style="display:none">
+      <label>会议主题</label><input id="mTitle" placeholder="如：10月班级例会">
+      <div class="lgrow">
+        <div><label>日期</label><input type="date" id="mDate"></div>
+        <div><label>时间</label><input id="mTime" placeholder="19:00-19:40"></div>
+      </div>
+      <label>地点</label><input id="mPlace" placeholder="如：教学楼 A203">
+      <div class="lgrow">
+        <div><label>主持人</label><input id="mHost"></div>
+        <div><label>记录人</label><input id="mRec"></div>
+      </div>
+      <div class="lgrow">
+        <div><label>应到人数</label><input type="number" id="mNeed" inputmode="numeric"></div>
+        <div><label>实到人数</label><input type="number" id="mReal" inputmode="numeric"></div>
+      </div>
+      <label>缺席人员</label><input id="mAbsent" placeholder="姓名，逗号分隔">
+      <label>会议内容</label><textarea id="mContent" placeholder="议程与讨论要点"></textarea>
+      <label>决议与待办</label><textarea id="mRes" placeholder="如：11月10日前收齐班费（生活委员）"></textarea>
+    </div>
+
+    <div class="lgfbtns">
+      <button class="btn-all" onclick="saveLgForm()">💾 保存</button>
+    </div>
+  </div>
+</div>
+</template>
+
 <button id="txFab" onclick="toggleTx()">📂</button>
 <div id="txPanel">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
@@ -148,6 +285,35 @@ body{padding-bottom:70px;}
   </div>
 </div></div>
 
+<!-- 插件管理器 -->
+<div id="page-pm" class="page">
+  <h1>🧩 插件管理器</h1>
+  <div class="card">
+    <div class="toolbar">
+      <button class="btn-all" onclick="pmRefresh(true)">🔄 检查插件更新</button>
+      <button class="btn-export" onclick="pmSourceUI()">🌐 插件源</button>
+      <span class="tip" id="pmStatus"></span>
+    </div>
+    <div class="tip" id="pmSrcTip"></div>
+  </div>
+  <div class="card">
+    <h2>插件列表</h2>
+    <div id="pmList"></div>
+  </div>
+  <div class="card">
+    <h2>说明</h2>
+    <div class="tip" style="line-height:1.9">
+      · 内置插件随 APP 安装，无需联网，可直接启用/停用。<br>
+      · 在线插件需点「下载安装」，安装后离线可用，无需每次联网。<br>
+      · 停用只是从底部导航隐藏，数据保留；卸载才会清除该插件数据。<br>
+      · 插件与主程序数据互通（可读取班级名单用于统计）。
+    </div>
+  </div>
+</div>
+
+<!-- 插件页面容器：启用的插件会在这里生成页面 -->
+<div id="pluginPages"></div>
+
 <div class="nav">
   <button id="nav-att" class="active" onclick="switchPage('att')">📝 考勤</button>
   <button id="nav-tt" onclick="switchPage('tt')">📅 课表</button>
@@ -157,6 +323,14 @@ body{padding-bottom:70px;}
 <!-- 第3页：设置 -->
 <div id="page-set" class="page">
   <h1>⚙️ 设置</h1>
+  <div class="card">
+    <h2>🧩 插件</h2>
+    <div class="toolbar">
+      <button class="btn-all" onclick="switchPage('pm')">🧩 打开插件管理器</button>
+      <span class="tip" id="pmBadge"></span>
+    </div>
+    <div class="tip">按需下载/启用功能插件，启用的插件会出现在底部导航。停用不会删除数据。</div>
+  </div>
   <div class="card">
     <h2>常用设置</h2>
     <div class="toolbar" style="flex-direction:column;align-items:flex-start;gap:12px;">
@@ -334,13 +508,16 @@ function exportAll(){let csv="学号,姓名,性别,出勤,迟到,请假,旷课,�
 
 render();
 
-/* ===== 页面切换 ===== */
+/* ===== 页面切换（插件页由插件框架动态生成） ===== */
 function switchPage(p){
   document.querySelectorAll(".page").forEach(e=>e.classList.remove("active"));
-  document.getElementById("page-"+p).classList.add("active");
-  document.getElementById("nav-att").classList.toggle("active",p==="att");
-  document.getElementById("nav-tt").classList.toggle("active",p==="tt");
+  const el=document.getElementById("page-"+p);
+  if(el)el.classList.add("active");
+  document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.id==="nav-"+p));
   if(p==="tt")renderTT();
+  if(p==="pm"){renderPM();if(!pmSynced)pmRefresh(false);}
+  const d=(typeof PM_DEF!=="undefined")?PM_DEF[p]:null;
+  if(d&&d.onShow){try{typeof d.onShow==="function"?d.onShow():window[d.onShow]();}catch(e){console.warn(e);}}
 }
 
 /* ===== 周历课表 ===== */
@@ -397,8 +574,9 @@ function ttClick(d,slot){
 }
 
 /* ===== 设置页 ===== */
-const APP_VERSION="1.4.2";
+const APP_VERSION="1.5.0";
 const CHANGELOG=[
+ ["1.5.0","2026-11-08",["新增「班级台账」模块（底部导航第3项）","班费：记录每笔收支，自动统计总收入/总支出/当前余额与人均余额，支持按月筛选、编辑删除、导出CSV","会议：记录主题/时间/地点/主持/记录人/应到实到/缺席/内容/决议待办，点击可展开详情，支持导出CSV","备份文件已包含台账数据"]],
  ["1.4.2","2026-10-28",["修复：检查更新改用 jsDelivr CDN 读取版本信息（GitHub API 限流导致版本号错误），多源自动回退"]],
  ["1.4.1","2026-10-28",["修复：部分情况下页面出现黑边（WebView视口与页面缩放配置冲突）"]],
  ["1.4.0","2026-10-28",["检查更新支持一键下载并自动拉起安装","自动切换国内镜像源（ghfast.top/gh-proxy.com/ghproxy.net），失败自动重试直连"]],
@@ -415,8 +593,8 @@ const CHANGELOG=[
 let opts=JSON.parse(localStorage.getItem("app_opts")||"{}");
 function saveOpts(){opts={auto:document.getElementById("optAuto").checked,clsName:document.getElementById("optClassName").value,url:document.getElementById("optUrl").value};localStorage.setItem("app_opts",JSON.stringify(opts));applyOpts();}
 function applyOpts(){document.getElementById("optAuto").checked=opts.auto!==false;document.getElementById("optClassName").value=opts.clsName||"";document.getElementById("optUrl").value=opts.url||"";document.querySelector("h1").textContent="📋 "+(opts.clsName||"班级")+" 考勤管理系统";document.getElementById("aboutInfo").textContent="班级考勤管理系统（通用版） v"+APP_VERSION;}
-function backupData(){dl("考勤备份_"+new Date().toISOString().slice(0,10)+".json",JSON.stringify({students:STUDENTS,db:db,timetable:timetable,opts:opts},null,1));}
-function restoreData(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);if(o.db)db=o.db;if(o.timetable)timetable=o.timetable;if(o.opts)opts=o.opts;if(Array.isArray(o.students)&&o.students.length){STUDENTS=o.students;saveStudents();}save();saveTT();localStorage.setItem("app_opts",JSON.stringify(opts));applyOpts();render();txUploadDone("备份恢复.json",1);}catch(e){alert2("备份文件无效");}};r.readAsText(f);}
+function backupData(){dl("班级数据备份_"+new Date().toISOString().slice(0,10)+".json",JSON.stringify({students:STUDENTS,db:db,timetable:timetable,opts:opts,fund:FUND,meet:MEET},null,1));}
+function restoreData(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);if(o.db)db=o.db;if(o.timetable)timetable=o.timetable;if(o.opts)opts=o.opts;if(Array.isArray(o.fund))FUND=o.fund;if(Array.isArray(o.meet))MEET=o.meet;if(Array.isArray(o.students)&&o.students.length){STUDENTS=o.students;saveStudents();}save();saveTT();saveFund();saveMeet();localStorage.setItem("app_opts",JSON.stringify(opts));applyOpts();render();txUploadDone("备份恢复.json",1);}catch(e){alert2("备份文件无效");}};r.readAsText(f);}
 function wipeData(){askConfirm("确定清空全部考勤数据和课表？此操作不可恢复，建议先导出备份！",()=>{db={};timetable={};save();saveTT();render();alert2("已清空");});}
 
 /* ===== 一键更新安装（APP原生下载+镜像源，浏览器回退） ===== */
@@ -547,6 +725,454 @@ function ttImport(inp){
   };
   r.readAsText(f,"utf-8");
 }
+
+/* ================= 班级台账：班费 + 会议 ================= */
+let FUND=(()=>{try{const v=JSON.parse(localStorage.getItem("ledger_fund"));return Array.isArray(v)?v:[];}catch(e){return [];}})();
+let MEET=(()=>{try{const v=JSON.parse(localStorage.getItem("ledger_meet"));return Array.isArray(v)?v:[];}catch(e){return [];}})();
+let lgTab="fund";
+let lgEdit=null;           // {kind:"fund"|"meet", id:null|string}
+const FUND_CATS={in:["班费收取","赞助","其他收入"],out:["活动","聚餐","打印复印","学习用品","奖品","体育用品","其他支出"]};
+
+function saveFund(){localStorage.setItem("ledger_fund",JSON.stringify(FUND));}
+function saveMeet(){localStorage.setItem("ledger_meet",JSON.stringify(MEET));}
+function money(n){return "¥"+(Number(n)||0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,",");}
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function todayStr(){return new Date().toISOString().slice(0,10);}
+
+function switchLgTab(t){lgTab=t;renderLedger();}
+function renderLedger(){
+  document.getElementById("lgtab-fund").classList.toggle("active",lgTab==="fund");
+  document.getElementById("lgtab-meet").classList.toggle("active",lgTab==="meet");
+  document.getElementById("lgFundView").style.display=lgTab==="fund"?"block":"none";
+  document.getElementById("lgMeetView").style.display=lgTab==="meet"?"block":"none";
+  if(lgTab==="fund")renderFund();else renderMeet();
+}
+
+/* ---------- 班费 ---------- */
+function renderFund(){
+  const tin=FUND.filter(r=>r.type==="in").reduce((s,r)=>s+(Number(r.amt)||0),0);
+  const tout=FUND.filter(r=>r.type==="out").reduce((s,r)=>s+(Number(r.amt)||0),0);
+  const bal=tin-tout;
+  document.getElementById("fundSum").innerHTML=
+    `<div class="fs fs-in"><small>总收入</small><b>${money(tin)}</b></div>`+
+    `<div class="fs fs-out"><small>总支出</small><b>${money(tout)}</b></div>`+
+    `<div class="fs fs-bal"><small>当前余额</small><b>${money(bal)}</b></div>`;
+  document.getElementById("fundTip").innerHTML=
+    (STUDENTS.length?`按 ${STUDENTS.length} 人计，人均余额 <b>${money(bal/STUDENTS.length)}</b>。`:"")+
+    `共 ${FUND.length} 笔记录。`;
+
+  // 月份筛选
+  const months=[...new Set(FUND.map(r=>String(r.date||"").slice(0,7)).filter(Boolean))].sort().reverse();
+  const sel=document.getElementById("fMonth");
+  const cur=sel.value||"all";
+  sel.innerHTML=`<option value="all">全部月份</option>`+months.map(m=>`<option value="${m}">${m}</option>`).join("");
+  sel.value=(cur==="all"||months.includes(cur))?cur:"all";
+
+  let list=FUND.slice().sort((a,b)=>String(b.date).localeCompare(String(a.date))||String(b.id).localeCompare(String(a.id)));
+  if(sel.value!=="all")list=list.filter(r=>String(r.date).startsWith(sel.value));
+
+  document.getElementById("fundCount").textContent=`（${list.length} 笔）`;
+  document.getElementById("fundList").innerHTML=list.length?list.map(r=>{
+    const isIn=r.type==="in";
+    return `<div class="lgitem">
+      <div class="top">
+        <div><b>${esc(r.cat||(isIn?"收入":"支出"))}</b>
+          <div class="meta">${esc(r.date)}${r.who?" · 经办："+esc(r.who):""}${r.note?"<br>"+esc(r.note):""}</div>
+        </div>
+        <span class="amt ${isIn?"amt-in":"amt-out"}">${money(r.amt)}</span>
+      </div>
+      <div class="lgacts">
+        <button class="btn-del" onclick="delFund('${r.id}')">删除</button>
+        <button class="btn-export" onclick="openFundForm('${r.id}')">编辑</button>
+      </div>
+    </div>`;
+  }).join(""):`<div class="lgempty">暂无收支记录<br>点上方「➕ 记一笔」开始记账</div>`;
+}
+
+function fillFundCats(keep){
+  const t=document.getElementById("fType").value;
+  const s=document.getElementById("fCat");
+  s.innerHTML=FUND_CATS[t].map(c=>`<option>${c}</option>`).join("");
+  if(keep&&FUND_CATS[t].includes(keep))s.value=keep;
+}
+function openFundForm(id){
+  lgEdit={kind:"fund",id:id||null};
+  const r=id?FUND.find(x=>x.id===id):null;
+  document.getElementById("lgTitle").textContent=id?"编辑收支记录":"新增收支记录";
+  document.getElementById("lgFundForm").style.display="block";
+  document.getElementById("lgMeetForm").style.display="none";
+  document.getElementById("fDate").value=r?(r.date||todayStr()):todayStr();
+  document.getElementById("fType").value=r?(r.type||"out"):"out";
+  fillFundCats(r?r.cat:"");
+  document.getElementById("fAmt").value=r?(r.amt!=null?r.amt:""):"";
+  document.getElementById("fNote").value=r?(r.note||""):"";
+  document.getElementById("fWho").value=r?(r.who||""):"";
+  document.getElementById("lgMask").classList.add("show");
+}
+function delFund(id){
+  const r=FUND.find(x=>x.id===id);if(!r)return;
+  askConfirm(`确定删除这笔记录？\n${r.date} ${r.cat} ${money(r.amt)}`,()=>{
+    FUND=FUND.filter(x=>x.id!==id);saveFund();renderFund();
+  });
+}
+
+/* ---------- 会议 ---------- */
+function renderMeet(){
+  const list=MEET.slice().sort((a,b)=>String(b.date).localeCompare(String(a.date))||String(b.id).localeCompare(String(a.id)));
+  document.getElementById("meetCount").textContent=`共 ${MEET.length} 次会议`;
+  document.getElementById("meetList").innerHTML=list.length?list.map(r=>{
+    const need=Number(r.need)||0,real=Number(r.real)||0;
+    const rate=need?Math.round(real/need*100):0;
+    return `<div class="lgitem" id="m-${r.id}">
+      <div class="top" onclick="this.parentNode.classList.toggle('open')">
+        <div>
+          <b>${esc(r.title||"(未命名会议)")}</b>
+          <div class="meta">${esc(r.date)}${r.time?" "+esc(r.time):""}${r.place?" · "+esc(r.place):""}</div>
+        </div>
+        <div style="text-align:right;white-space:nowrap;">
+          <span class="mtag">${real}/${need} 人 · ${rate}%</span>
+          <div class="meta">${r.host?"主持："+esc(r.host):""}</div>
+        </div>
+      </div>
+      <div class="mbody">
+        ${r.rec?`<h4>记录人</h4><div class="txt">${esc(r.rec)}</div>`:""}
+        ${r.absent?`<h4>缺席人员</h4><div class="txt">${esc(r.absent)}</div>`:""}
+        ${r.content?`<h4>会议内容</h4><div class="txt">${esc(r.content)}</div>`:""}
+        ${r.res?`<h4>决议与待办</h4><div class="txt">${esc(r.res)}</div>`:""}
+      </div>
+      <div class="lgacts">
+        <button class="btn-del" onclick="delMeet('${r.id}')">删除</button>
+        <button class="btn-export" onclick="openMeetForm('${r.id}')">编辑</button>
+      </div>
+    </div>`;
+  }).join(""):`<div class="lgempty">暂无会议记录<br>点上方「➕ 新建会议记录」开始记录</div>`;
+}
+function openMeetForm(id){
+  lgEdit={kind:"meet",id:id||null};
+  const r=id?MEET.find(x=>x.id===id):null;
+  document.getElementById("lgTitle").textContent=id?"编辑会议记录":"新建会议记录";
+  document.getElementById("lgFundForm").style.display="none";
+  document.getElementById("lgMeetForm").style.display="block";
+  const set=(k,v)=>{document.getElementById(k).value=v==null?"":v;};
+  set("mTitle",r?r.title:"");
+  set("mDate",r?(r.date||todayStr()):todayStr());
+  set("mTime",r?r.time:"");
+  set("mPlace",r?r.place:"");
+  set("mHost",r?r.host:"");
+  set("mRec",r?r.rec:"");
+  set("mNeed",r?r.need:(STUDENTS.length||""));
+  set("mReal",r?r.real:"");
+  set("mAbsent",r?r.absent:"");
+  set("mContent",r?r.content:"");
+  set("mRes",r?r.res:"");
+  document.getElementById("lgMask").classList.add("show");
+}
+function delMeet(id){
+  const r=MEET.find(x=>x.id===id);if(!r)return;
+  askConfirm(`确定删除会议记录？\n${r.date} ${r.title||""}`,()=>{
+    MEET=MEET.filter(x=>x.id!==id);saveMeet();renderMeet();
+  });
+}
+function closeLgForm(){document.getElementById("lgMask").classList.remove("show");lgEdit=null;}
+
+function saveLgForm(){
+  if(!lgEdit)return;
+  if(lgEdit.kind==="fund"){
+    const amt=parseFloat(document.getElementById("fAmt").value);
+    if(!(amt>0)){alert2("请输入有效金额（大于 0）");return;}
+    const o={
+      id:lgEdit.id||("f"+Date.now()),
+      date:document.getElementById("fDate").value||todayStr(),
+      type:document.getElementById("fType").value,
+      amt:Math.round(amt*100)/100,
+      cat:document.getElementById("fCat").value,
+      note:document.getElementById("fNote").value.trim(),
+      who:document.getElementById("fWho").value.trim()
+    };
+    if(lgEdit.id){const i=FUND.findIndex(x=>x.id===lgEdit.id);if(i>=0)FUND[i]=o;else FUND.push(o);}
+    else FUND.push(o);
+    saveFund();closeLgForm();renderFund();
+  }else{
+    const title=document.getElementById("mTitle").value.trim();
+    if(!title){alert2("请填写会议主题");return;}
+    const o={
+      id:lgEdit.id||("m"+Date.now()),
+      title:title,
+      date:document.getElementById("mDate").value||todayStr(),
+      time:document.getElementById("mTime").value.trim(),
+      place:document.getElementById("mPlace").value.trim(),
+      host:document.getElementById("mHost").value.trim(),
+      rec:document.getElementById("mRec").value.trim(),
+      need:parseInt(document.getElementById("mNeed").value)||0,
+      real:parseInt(document.getElementById("mReal").value)||0,
+      absent:document.getElementById("mAbsent").value.trim(),
+      content:document.getElementById("mContent").value.trim(),
+      res:document.getElementById("mRes").value.trim()
+    };
+    if(lgEdit.id){const i=MEET.findIndex(x=>x.id===lgEdit.id);if(i>=0)MEET[i]=o;else MEET.push(o);}
+    else MEET.push(o);
+    saveMeet();closeLgForm();renderMeet();
+  }
+}
+
+/* ---------- 台账导出 ---------- */
+function exportFund(){
+  if(!FUND.length){alert2("暂无收支记录");return;}
+  const list=FUND.slice().sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+  let csv="日期,类型,分类,金额,说明,经办人\n";
+  list.forEach(r=>{csv+=`${r.date},${r.type==="in"?"收入":"支出"},${r.cat||""},${(Number(r.amt)||0).toFixed(2)},"${String(r.note||"").replace(/"/g,'""')}",${r.who||""}\n`;});
+  const tin=list.filter(r=>r.type==="in").reduce((s,r)=>s+(Number(r.amt)||0),0);
+  const tout=list.filter(r=>r.type==="out").reduce((s,r)=>s+(Number(r.amt)||0),0);
+  csv+=`\n合计收入,,,${tin.toFixed(2)}\n合计支出,,,${tout.toFixed(2)}\n当前余额,,,${(tin-tout).toFixed(2)}\n`;
+  dl("班费台账_"+todayStr()+".csv",csv);
+}
+function exportMeet(){
+  if(!MEET.length){alert2("暂无会议记录");return;}
+  const list=MEET.slice().sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+  let csv="日期,时间,主题,地点,主持,记录人,应到,实到,缺席,会议内容,决议与待办\n";
+  list.forEach(r=>{
+    const q=s=>`"${String(s||"").replace(/"/g,'""').replace(/\r?\n/g," ")}"`;
+    csv+=`${r.date},${r.time||""},${q(r.title)},${q(r.place)},${q(r.host)},${q(r.rec)},${r.need||0},${r.real||0},${q(r.absent)},${q(r.content)},${q(r.res)}\n`;
+  });
+  dl("会议记录_"+todayStr()+".csv",csv);
+}
+
+/* ================= 插件框架 ================= */
+const PM_DEFAULT_SRC="https://cdn.jsdelivr.net/gh/DrLychee/didactic-octo-telegram@main/plugins/index.json";
+const PM_SRC_FALLBACKS=[
+  "https://cdn.jsdelivr.net/gh/DrLychee/didactic-octo-telegram@main/plugins/index.json",
+  "https://fastly.jsdelivr.net/gh/DrLychee/didactic-octo-telegram@main/plugins/index.json",
+  "https://ghfast.top/https://raw.githubusercontent.com/DrLychee/didactic-octo-telegram/main/plugins/index.json",
+  "https://raw.githubusercontent.com/DrLychee/didactic-octo-telegram/main/plugins/index.json"
+];
+const PM_BUILTIN=[
+  {id:"ledger",name:"班级台账",icon:"💰",navLabel:"台账",version:"1.0.0",author:"官方",builtin:true,
+   desc:"记录班费收支与会议纪要，自动统计总收入/总支出/余额，支持按月筛选与 CSV 导出。",
+   tpl:"tpl-ledger",onShow:"renderLedger"}
+];
+let PM_META={};        // id -> 元数据（含在线插件）
+let PM_DEF={};         // id -> 已加载的插件实现
+let PM_STATE={installed:{},enabled:[],meta:{}};
+let pmSynced=false;
+
+function pmLoadState(){
+  try{
+    const s=JSON.parse(localStorage.getItem("pm_state_v1")||"null");
+    if(s&&typeof s==="object")PM_STATE={installed:s.installed||{},enabled:Array.isArray(s.enabled)?s.enabled:[],meta:s.meta||{}};
+  }catch(e){}
+}
+function pmSaveState(){localStorage.setItem("pm_state_v1",JSON.stringify(PM_STATE));}
+function pmSource(){return localStorage.getItem("pm_source")||PM_DEFAULT_SRC;}
+function pmIsOn(id){return PM_STATE.enabled.indexOf(id)>=0;}
+function pmIsInstalled(id){
+  const m=PM_META[id];
+  return !!(m&&(m.builtin||PM_STATE.installed[id]!=null));
+}
+
+window.__registerPlugin=function(def){
+  if(!def||!def.id)return;
+  PM_DEF[def.id]=def;
+  if(PM_META[def.id]){
+    const m=PM_META[def.id];
+    m.name=def.name||m.name; m.icon=def.icon||m.icon; m.version=def.version||m.version;
+    m.desc=def.desc||m.desc; m.author=def.author||m.author; m.navLabel=def.navLabel||m.navLabel;
+  }
+};
+function pmEval(code){
+  try{(new Function("__registerPlugin",code))(window.__registerPlugin);return true;}
+  catch(e){console.warn("插件加载失败",e);return false;}
+}
+
+function pmActivate(id){
+  const d=PM_DEF[id];
+  if(!d)return false;
+  if(!document.getElementById("page-"+id)){
+    const pg=document.createElement("div");
+    pg.className="page";pg.id="page-"+id;pg.innerHTML=d.html||"";
+    document.getElementById("pluginPages").appendChild(pg);
+  }
+  if(!document.getElementById("nav-"+id)){
+    const btn=document.createElement("button");
+    btn.id="nav-"+id;
+    btn.textContent=(d.icon||"🧩")+" "+(d.navLabel||d.name||id);
+    btn.onclick=function(){switchPage(id);};
+    const nav=document.querySelector(".nav");
+    nav.insertBefore(btn,document.getElementById("nav-set"));
+  }
+  if(!d._inited){
+    d._inited=true;
+    try{if(typeof d.init==="function")d.init();}catch(e){console.warn(e);}
+  }
+  return true;
+}
+function pmDeactivate(id){
+  const pg=document.getElementById("page-"+id);
+  const wasActive=!!(pg&&pg.classList.contains("active"));
+  if(pg)pg.remove();
+  const btn=document.getElementById("nav-"+id);
+  if(btn)btn.remove();
+  if(PM_DEF[id])PM_DEF[id]._inited=false;
+  if(wasActive)switchPage("att");
+}
+function pmEnable(id){
+  if(!pmIsInstalled(id)){alert2("插件尚未安装，请先点「下载安装」");return;}
+  if(!pmActivate(id)){alert2("插件加载失败，请尝试重新下载安装");return;}
+  if(!pmIsOn(id))PM_STATE.enabled.push(id);
+  pmSaveState();renderPM();switchPage(id);
+}
+function pmDisable(id){
+  PM_STATE.enabled=PM_STATE.enabled.filter(x=>x!==id);
+  pmSaveState();pmDeactivate(id);renderPM();
+}
+
+function pmInstall(id){
+  const m=PM_META[id];
+  if(!m){alert2("未找到该插件信息");return;}
+  if(m.builtin){alert2("内置插件无需下载，直接启用即可");return;}
+  if(!m.file){alert2("该插件缺少下载地址");return;}
+  const row=txRow("pm_"+id,"🧩 下载插件："+m.name);
+  txStep(row,12,"连接插件源…");
+  fetch(m.file+(m.file.indexOf("?")>=0?"&":"?")+"t="+Date.now(),{cache:"no-store"})
+    .then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);txStep(row,65,"正在校验…");return r.text();})
+    .then(code=>{
+      if(!/__registerPlugin/.test(code))throw new Error("插件格式不符");
+      localStorage.setItem("pm_code_"+id,code);
+      if(!pmEval(code))throw new Error("插件加载失败");
+      if(!PM_DEF[id])throw new Error("插件注册失败");
+      PM_STATE.installed[id]=m.version||"1.0.0";
+      PM_STATE.meta=PM_STATE.meta||{};PM_STATE.meta[id]=m;
+      pmSaveState();
+      txStep(row,100,"✅ 安装完成 v"+PM_STATE.installed[id]);
+      renderPM();
+      alert2("《"+m.name+"》安装完成 v"+PM_STATE.installed[id]+"\n点击「启用」即可在底部导航使用。");
+    })
+    .catch(e=>{
+      txStep(row,100,"❌ 下载失败："+(e&&e.message||"网络异常"));
+      alert2("插件下载失败："+(e&&e.message||"网络异常")+"\n请检查网络或更换插件源");
+    });
+}
+function pmUninstall(id){
+  const m=PM_META[id];
+  if(m&&m.builtin){alert2("内置插件不可卸载，可停用");return;}
+  askConfirm("确定卸载《"+(m?m.name:id)+"》？\n该插件内的数据会被清除。",()=>{
+    pmDisable(id);
+    delete PM_STATE.installed[id];
+    if(PM_STATE.meta)delete PM_STATE.meta[id];
+    pmSaveState();
+    localStorage.removeItem("pm_code_"+id);
+    try{localStorage.removeItem("plugin_"+id);}catch(e){}
+    delete PM_DEF[id];
+    renderPM();
+  });
+}
+
+function pmRefresh(manual){
+  const urls=[pmSource()].concat(PM_SRC_FALLBACKS.filter(u=>u!==pmSource()));
+  const st=document.getElementById("pmStatus");
+  if(st)st.textContent="正在获取插件列表…";
+  (function tryNext(i){
+    if(i>=urls.length){
+      if(st)st.textContent="插件源不可用，请检查网络";
+      if(manual)alert2("无法连接插件源\n请检查网络，或在「插件源」里更换地址");
+      return;
+    }
+    fetch(urls[i]+(urls[i].indexOf("?")>=0?"&":"?")+"t="+Date.now(),{cache:"no-store"})
+      .then(r=>{if(!r.ok)throw 0;return r.json();})
+      .then(j=>{
+        const arr=Array.isArray(j)?j:(j.plugins||[]);
+        arr.forEach(p=>{
+          if(!p||!p.id)return;
+          if(PM_META[p.id]&&PM_META[p.id].builtin)return;
+          PM_META[p.id]=Object.assign({},PM_META[p.id]||{},p);
+        });
+        pmSynced=true;renderPM();
+        if(manual)alert2("插件列表已更新\n共 "+Object.keys(PM_META).length+" 个插件");
+      })
+      .catch(()=>tryNext(i+1));
+  })(0);
+}
+function pmSourceUI(){
+  askText("插件源地址（index.json）\n留空则恢复默认",pmSource(),v=>{
+    if(v===null)return;
+    v=v.trim();
+    if(v){localStorage.setItem("pm_source",v);}else{localStorage.removeItem("pm_source");}
+    renderPM();pmRefresh(false);
+  });
+}
+
+function renderPM(){
+  const list=document.getElementById("pmList");
+  if(!list)return;
+  const ids=Object.keys(PM_META);
+  const on=PM_STATE.enabled||[];
+  if(document.getElementById("pmBadge"))document.getElementById("pmBadge").textContent="已启用 "+on.length+" 个插件";
+  if(document.getElementById("pmStatus"))document.getElementById("pmStatus").textContent="已启用 "+on.length+" 个 · 共 "+ids.length+" 个插件";
+  if(document.getElementById("pmSrcTip"))document.getElementById("pmSrcTip").innerHTML="插件源："+esc(pmSource());
+
+  list.innerHTML=ids.length?ids.map(id=>{
+    const m=PM_META[id];
+    const bi=!!m.builtin;
+    const installed=pmIsInstalled(id);
+    const enabled=pmIsOn(id)&&installed;
+    const ver=bi?(m.version||"1.0.0"):(PM_STATE.installed[id]||"");
+    const newer=installed&&!bi&&m.version&&PM_STATE.installed[id]&&cmpVer(m.version,PM_STATE.installed[id])>0;
+
+    let tags=`<span class="pmtag ${bi?"bi":""}">${bi?"内置":"在线"}</span>`;
+    tags+=enabled?`<span class="pmtag on">已启用</span>`:`<span class="pmtag off">${installed?"已安装未启用":"未安装"}</span>`;
+    if(newer)tags+=`<span class="pmtag new">可更新 v${esc(m.version)}</span>`;
+
+    let btns="";
+    if(!installed){
+      btns=`<button class="btn-toggle" onclick="pmInstall('${id}')">⬇️ 下载安装</button>`;
+    }else{
+      btns=enabled
+        ? `<button class="btn-toggle" onclick="pmDisable('${id}')">⏸ 停用</button>`
+        : `<button class="btn-toggle" onclick="pmEnable('${id}')">▶️ 启用</button>`;
+      if(newer)btns+=`<button class="btn-export" onclick="pmInstall('${id}')">⬆️ 更新</button>`;
+      if(!bi)btns+=`<button class="btn-del" onclick="pmUninstall('${id}')">卸载</button>`;
+    }
+
+    return `<div class="pmcard">
+      <div class="pmhd">
+        <div class="pmicon">${esc(m.icon||"🧩")}</div>
+        <div class="pmmain">
+          <div class="pmname">${esc(m.name||id)}<span class="pmver">v${esc(ver||"?")}</span></div>
+          <div class="pmdesc">${esc(m.desc||"暂无描述")}</div>
+          <div class="pmtags">${tags}</div>
+        </div>
+      </div>
+      <div class="pmbtns">${btns}</div>
+    </div>`;
+  }).join(""):`<div class="lgempty">暂无可用插件<br>点上方「检查插件更新」获取在线插件</div>`;
+}
+
+/* 启动：加载状态 → 恢复已安装插件 → 激活已启用插件 */
+(function pmBoot(){
+  const firstRun=!localStorage.getItem("pm_state_v1");
+  pmLoadState();
+  PM_BUILTIN.forEach(m=>{
+    PM_META[m.id]={id:m.id,name:m.name,icon:m.icon,navLabel:m.navLabel,version:m.version,author:m.author,desc:m.desc,builtin:true};
+    if(m.tpl){
+      const t=document.getElementById(m.tpl);
+      PM_DEF[m.id]={id:m.id,name:m.name,icon:m.icon,navLabel:m.navLabel,version:m.version,
+        html:t?t.innerHTML:"",onShow:m.onShow};
+    }
+  });
+  // 恢复在线插件元数据
+  Object.keys(PM_STATE.meta||{}).forEach(id=>{
+    if(PM_META[id]&&PM_META[id].builtin)return;
+    PM_META[id]=Object.assign({},PM_STATE.meta[id],{});
+  });
+  // 恢复在线插件代码
+  Object.keys(PM_STATE.installed||{}).forEach(id=>{
+    if(PM_META[id]&&PM_META[id].builtin)return;
+    const code=localStorage.getItem("pm_code_"+id);
+    if(code)pmEval(code);
+  });
+  if(firstRun){PM_STATE.enabled=["ledger"];pmSaveState();}
+  PM_STATE.enabled.forEach(id=>{if(PM_DEF[id])pmActivate(id);});
+  renderPM();
+})();
 </script>
 </body>
 </html>
