@@ -1,8 +1,7 @@
 {
-  "version": "1.5.1",
-  "apkUrl": "https://github.com/DrLychee/didactic-octo-telegram/releases/download/v1.5.1/class-attend-v1.5.1.apk",
+  "version": "1.5.2",
+  "apkUrl": "https://github.com/DrLychee/didactic-octo-telegram/releases/download/v1.5.2/class-attend-v1.5.2.apk",
   "log": [
-    "修复：打开出现大黑边、界面被缩小（补上 targetSdkVersion，系统不再启用屏幕兼容模式）",
-    "修复：导入 CSV 提示「没有应用可执行此操作」（改用系统文件管理器，统一不限类型，失败自动回退）"
+    "修复：小米/澎湃系统安装失败(-124)「与系统不兼容」（修正 resources.arsc 压缩存储问题）"
   ]
 }
